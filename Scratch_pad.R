@@ -22,3 +22,8 @@ selected_stocks <- c("GOOG", "AAPL")
 stocks %>%
   filter(symbol %in% selected_stocks) %>%
   autoplot(open)
+
+#Filtering by sub industry and plotting
+stocks %>% 
+  filter(gics_sub_industry == "Soft Drinks") %>% 
+  autoplot(open)
