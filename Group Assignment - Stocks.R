@@ -17,6 +17,7 @@ server <- function(input, output, session) {
       filter(symbol ==   input$text ) %>% 
       autoplot(close) +
       labs(title =  input$text)
+    
   })
   
 }
