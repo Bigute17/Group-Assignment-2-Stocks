@@ -7,10 +7,19 @@ stocks$date <- as.Date(stocks$date)
 stocks <- tsibble(stocks, index = date, key = symbol)
 
 ui <- fluidPage(
+  textInput("text", label = h3("Stock Symbol"), value = "Enter Stock Symbol"),
+  plotOutput('plot')
   
 )
 
 server <- function(input, output, session) {
+  output$plot <- renderPlot({
+    stocks %>% 
+      filter(symbol ==   input$text ) %>% 
+      autoplot(close) +
+      labs(title =  input$text)
+    
+  })
   
 }
 
