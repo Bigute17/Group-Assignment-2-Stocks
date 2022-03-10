@@ -7,7 +7,7 @@ stocks$date <- as.Date(stocks$date)
 stocks <- tsibble(stocks, index = date, key = symbol)
 
 ui <- fluidPage(
-  textInput("text", label = h3("Stock Symbol"), value = "AAPL"),
+  textInput("text", label = h3("Stock"), value = "AAPL"),
   radioButtons(
     inputId = 'selected_col',
     label = 'What would you like to plot?',
@@ -19,10 +19,10 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   output$plot <- renderPlot({
-    stocks %>% 
+    stocks[, c('symbol', 'date', input$selected_col)] %>% 
       filter(symbol == input$text ) %>% 
-      autoplot(input$selected_col) +
-      labs(title =  input$text)
+      autoplot() +
+      labs(title = input$text)
   })
   
 }
