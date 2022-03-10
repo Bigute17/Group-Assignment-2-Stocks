@@ -3,38 +3,47 @@ library(fpp3)
 library(readr)
 library(shinyWidgets)
 
-stocks <- read_csv('nyse_stocks.csv.zip')
+stocks <- read_csv("nyse_stocks.csv.zip")
 stocks$date <- as.Date(stocks$date)
 stocks <- tsibble(stocks, index = date, key = symbol)
-for (i in 1:length(unique(stocks$symbol))) {
-  stocks$totalgrowth[i] <- stocks$close[stocks$symbol == stocks$symbol[i] & stocks$date == "2016-12-30"] 
-  - stocks$open[stocks$symbol == stocks$symbol[i] & stocks$date == "2010-01-04"] }
 
 ui <- fluidPage(
   pickerInput(
     inputId = "stock",
-    label = "Pick one or more stocks.", 
+    label = "Pick one or more stocks.",
+    selected = "AAPL",
     choices = unique(stocks$symbol),
     options = list(
-      `live-search` = TRUE), multiple = TRUE
+      `live-search` = TRUE
+    ), multiple = TRUE
   ),
   radioButtons(
-    inputId = 'selected_col',
-    label = 'What would you like to plot?',
-    choices = c('open', 'close',
-                'high', 'low', 'volume')),
-  plotOutput('plot')
-  
+    inputId = "selected_col",
+    label = "What would you like to plot?",
+    choices = c(
+      "open", "close",
+      "high", "low", "volume"
+    )
+  ),
+  dateRangeInput(
+    inputId = "date_range",
+    label = "Choose Your Date Range",
+    start = min(stocks$date),
+    end = max(stocks$date),
+    min = min(stocks$date),
+    max = max(stocks$date)
+  ),
+  plotOutput("plot")
 )
 
 server <- function(input, output, session) {
   output$plot <- renderPlot({
-    stocks[, c('symbol', 'date', input$selected_col)] %>% 
-      filter(symbol == input$stock ) %>% 
+    stocks[, c("symbol", "date", input$selected_col)] %>%
+      filter(symbol == input$stock) %>%
+      filter(date %in% seq.Date(from = input$date_range[1], to = input$date_range[2], by = "day")) %>%
       autoplot() +
       labs(title = input$stock)
   })
-  
 }
 
 shinyApp(ui, server)

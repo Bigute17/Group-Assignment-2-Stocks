@@ -28,6 +28,10 @@ stocks %>%
   filter(gics_sub_industry == "Soft Drinks") %>% 
   autoplot(open)
 
+stocks$performance <- c()
 for (i in 1:length(unique(stocks$symbol))) {
   stocks$performance[i] <- stocks$close[stocks$symbol == stocks$symbol[i] & stocks$date == "2016-12-30"] 
   - stocks$open[stocks$symbol == stocks$symbol[i] & stocks$date == "2010-01-04"] }
+
+test <- c(min(stocks$date), max(stocks$date))
+test2 <- seq.Date(from = test[1], to = test[2], by = "day")
