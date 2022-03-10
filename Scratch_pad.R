@@ -27,3 +27,7 @@ stocks %>%
 stocks %>% 
   filter(gics_sub_industry == "Soft Drinks") %>% 
   autoplot(open)
+
+for (i in 1:length(unique(stocks$symbol))) {
+  stocks$performance[i] <- stocks$close[stocks$symbol == stocks$symbol[i] & stocks$date == "2016-12-30"] 
+  - stocks$open[stocks$symbol == stocks$symbol[i] & stocks$date == "2010-01-04"] }

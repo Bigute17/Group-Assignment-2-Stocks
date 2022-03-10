@@ -1,13 +1,20 @@
 library(shiny)
 library(fpp3)
 library(readr)
+library(shinyWidgets)
 
 stocks <- read_csv('nyse_stocks.csv.zip')
 stocks$date <- as.Date(stocks$date)
 stocks <- tsibble(stocks, index = date, key = symbol)
 
 ui <- fluidPage(
-  textInput("text", label = h3("Stock"), value = "AAPL"),
+  pickerInput(
+    inputId = "stock",
+    label = "Pick one or more stocks.", 
+    choices = unique(stocks$symbol),
+    options = list(
+      `live-search` = TRUE), multiple = TRUE
+  ),
   radioButtons(
     inputId = 'selected_col',
     label = 'What would you like to plot?',
@@ -20,9 +27,9 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   output$plot <- renderPlot({
     stocks[, c('symbol', 'date', input$selected_col)] %>% 
-      filter(symbol == input$text ) %>% 
+      filter(symbol == input$stock ) %>% 
       autoplot() +
-      labs(title = input$text)
+      labs(title = input$stock)
   })
   
 }
