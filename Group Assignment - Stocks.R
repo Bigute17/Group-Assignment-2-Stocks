@@ -6,6 +6,9 @@ library(shinyWidgets)
 stocks <- read_csv('nyse_stocks.csv.zip')
 stocks$date <- as.Date(stocks$date)
 stocks <- tsibble(stocks, index = date, key = symbol)
+for (i in 1:length(unique(stocks$symbol))) {
+  stocks$totalgrowth[i] <- stocks$close[stocks$symbol == stocks$symbol[i] & stocks$date == "2016-12-30"] 
+  - stocks$open[stocks$symbol == stocks$symbol[i] & stocks$date == "2010-01-04"] }
 
 ui <- fluidPage(
   pickerInput(
