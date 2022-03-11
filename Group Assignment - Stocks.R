@@ -1,6 +1,7 @@
 library(shiny)
 library(fpp3)
 library(readr)
+# install.packages("shinyWidgets")
 library(shinyWidgets)
 
 # Read in and Convert to tsibble()
@@ -64,7 +65,10 @@ ui <- fluidPage(
     label = "Choose Industry and See Stocks With the Largest Growth",
     choices = unique(newdf2$gics_sector)
   ),
-  tableOutput("table")
+  tableOutput("table"),
+  
+  h3("Use feature 4 to discover what your present dollar amount would be had you 
+     invested any desired amount into any desired stock when it was first available."),
   
   numericInput("investment", label = h4("What if I had invested ___ dollars?"), 
                value = 1),
@@ -111,8 +115,6 @@ server <- function(input, output, session) {
       change <- tail_val - first_val
       percent_change <- change / first_val
       earnings <- input$investment * percent_change
-      print(input$investment + earnings)
-  
-}
+      print(input$investment + earnings)})}
 
 shinyApp(ui, server)
