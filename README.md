@@ -6,8 +6,8 @@
 ## Feature 2 - Plot the lag!
 # * The user can click the action button to produce a lag plot of the stock and series of their choice. Linear patterns suggest autocorrelation in the data. 
 
-
-
+# Feature 3 - See stocks ranked by growth by industry!
+# * The user can select an industry and see which stocks experienced the most growth over time. This gives the user an idea of which companies have been the most successful since 2010.
 
 ## Feature 4 - How much would a investment from 2010 be worth in 2016?
 # * Use this feature to discover what your 2016 dollar amount would be had you invested any desired amount into any desired stock when it was available in 2010.
