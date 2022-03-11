@@ -33,7 +33,13 @@ ui <- fluidPage(
     min = min(stocks$date),
     max = max(stocks$date)
   ),
-  plotOutput("plot")
+  plotOutput("plot"),
+  pickerInput(
+    inputId = "selected_sector",
+    label = "Choose A Sector",
+    choices = unique(newdf2$gics_sector)
+  ),
+  tableOutput("table")
 )
 
 server <- function(input, output, session) {
@@ -43,6 +49,9 @@ server <- function(input, output, session) {
       filter(date %in% seq.Date(from = input$date_range[1], to = input$date_range[2], by = "day")) %>%
       autoplot() +
       labs(title = input$stock)
+  })
+  output$table <- renderTable({
+    sectorFilter <- head(subset(newdf2, newdf2$gics_sector == input$selected_sector), n = 10)
   })
 }
 
