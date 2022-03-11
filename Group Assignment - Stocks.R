@@ -4,8 +4,28 @@ library(readr)
 library(shinyWidgets)
 
 stocks <- read_csv("nyse_stocks.csv.zip")
-stocks$date <- as.Date(stocks$date)
 stocks <- tsibble(stocks, index = date, key = symbol)
+
+#create new df showing stocks on the min date and max date only
+last_day <- stocks %>% 
+  filter(stocks$date == max(stocks$date))
+first_day <- stocks %>% 
+  filter(stocks$date == min(stocks$date))
+#new df with new column growth(max date closing price 
+#minus min date closing price)
+newdf <- merge(last_day,first_day, by = "symbol")
+newdf$growth <- newdf$close.x - newdf$close.y
+
+#ranking stocks from highest difference to lowest
+newdf$growth <- sort(newdf$growth, decreasing = TRUE)
+newdf <- newdf[order(newdf$growth),]
+newdf2 <- newdf[order(nrow(newdf):1),]
+#deleting columns not needed for leaderboard 
+newdf2$gics_sector <- newdf2$gics_sector.x
+newdf2 <- newdf2 %>% 
+  select(-ends_with('.y')) %>% 
+  select(-ends_with('.x'))
+
 
 ui <- fluidPage(
   pickerInput(
@@ -33,10 +53,13 @@ ui <- fluidPage(
     min = min(stocks$date),
     max = max(stocks$date)
   ),
+  actionBttn("action", label = "Analyze Lag!", color = "primary"),
   plotOutput("plot"),
+  plotOutput("plot2"),
+  plotOutput("plot3"),
   pickerInput(
     inputId = "selected_sector",
-    label = "Choose A Sector",
+    label = "Choose Industry and See Stocks With the Largest Growth",
     choices = unique(newdf2$gics_sector)
   ),
   tableOutput("table")
@@ -50,6 +73,13 @@ server <- function(input, output, session) {
       autoplot() +
       labs(title = input$stock)
   })
+  observeEvent(input$action,
+  output$plot2 <- renderPlot({
+    stocks[, c("symbol", "date", input$selected_col)] %>%
+      filter(symbol == input$stock) %>%
+      gg_lag(geom = 'point') +
+      labs(title = input$stock, subtitle = "Lag Plot!")
+  }))
   output$table <- renderTable({
     sectorFilter <- head(subset(newdf2, newdf2$gics_sector == input$selected_sector), n = 10)
   })

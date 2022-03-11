@@ -58,6 +58,13 @@ newdf2 <- newdf2 %>%
 
 
 
+stocks %>%
+  filter(symbol == "ADBE") %>%
+  gg_lag(geom = 'point',y = open) 
+
+
+
+
 
 
 
