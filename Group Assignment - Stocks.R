@@ -20,7 +20,6 @@ newdf <- merge(last_day,first_day, by = "symbol")
 newdf$growth <- newdf$close.x - newdf$close.y
 
 #ranking stocks from highest difference to lowest
-newdf$growth <- sort(newdf$growth, decreasing = TRUE)
 newdf <- newdf[order(newdf$growth),]
 newdf2 <- newdf[order(nrow(newdf):1),]
 #deleting columns not needed for leaderboard 
@@ -67,6 +66,7 @@ ui <- fluidPage(
   ),
   tableOutput("table"),
   
+  
   h3("Use feature 4 to discover what your present dollar amount would be had you 
      invested any desired amount into any desired stock when it was first available."),
   
@@ -101,7 +101,7 @@ server <- function(input, output, session) {
   
   output$forecast <- renderPlot({
       stocks %>%
-      filter(symbol == input$text)%>%
+      filter(symbol == input$stock)%>%
       autoplot(close) +
       labs(title = input$text)})
     
@@ -115,6 +115,11 @@ server <- function(input, output, session) {
       change <- tail_val - first_val
       percent_change <- change / first_val
       earnings <- input$investment * percent_change
+
       print(input$investment + earnings)})}
 
+      print(input$investment + earnings)
+  } ) 
+
+}
 shinyApp(ui, server)
