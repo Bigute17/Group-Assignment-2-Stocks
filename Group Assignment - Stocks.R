@@ -64,7 +64,7 @@ ui <- fluidPage(
     label = "Choose Industry and See Stocks With the Largest Growth",
     choices = unique(newdf2$gics_sector)
   ),
-  tableOutput("table")
+  tableOutput("table"),
   
   numericInput("investment", label = h4("What if I had invested ___ dollars?"), 
                value = 1),
@@ -97,7 +97,7 @@ server <- function(input, output, session) {
   
   output$forecast <- renderPlot({
       stocks %>%
-      filter(symbol == input$text)%>%
+      filter(symbol == input$stock)%>%
       autoplot(close) +
       labs(title = input$text)})
     
@@ -112,7 +112,7 @@ server <- function(input, output, session) {
       percent_change <- change / first_val
       earnings <- input$investment * percent_change
       print(input$investment + earnings)
-  
-}
+  } ) 
 
+}
 shinyApp(ui, server)
