@@ -3,7 +3,9 @@ library(fpp3)
 library(readr)
 library(shinyWidgets)
 
-stocks <- read_csv("nyse_stocks.csv.zip")
+# Read in and Convert to tsibble()
+stocks <- read_csv('nyse_stocks.csv.zip')
+stocks$date <- as.Date(stocks$date)
 stocks <- tsibble(stocks, index = date, key = symbol)
 
 #create new df showing stocks on the min date and max date only
@@ -63,6 +65,15 @@ ui <- fluidPage(
     choices = unique(newdf2$gics_sector)
   ),
   tableOutput("table")
+  
+  numericInput("investment", label = h4("What if I had invested ___ dollars?"), 
+               value = 1),
+  
+  textInput("text", label = h4("Input desired stock symbol"), 
+  value = "AAPL"),hr(),fluidRow(column(3, verbatimTextOutput("value"))),
+  
+  plotOutput("forecast")
+  
 )
 
 server <- function(input, output, session) {
@@ -83,6 +94,25 @@ server <- function(input, output, session) {
   output$table <- renderTable({
     sectorFilter <- head(subset(newdf2, newdf2$gics_sector == input$selected_sector), n = 10)
   })
+  
+  output$forecast <- renderPlot({
+      stocks %>%
+      filter(symbol == input$text)%>%
+      autoplot(close) +
+      labs(title = input$text)})
+    
+    output$value <- renderPrint({ 
+      filtered <- stocks %>% 
+        filter(symbol == input$text) %>% 
+        arrange(date)
+      
+      first_val <- head(filtered$close, 1)
+      tail_val <- tail(filtered$close, 1)
+      change <- tail_val - first_val
+      percent_change <- change / first_val
+      earnings <- input$investment * percent_change
+      print(input$investment + earnings)
+  
 }
 
 shinyApp(ui, server)
