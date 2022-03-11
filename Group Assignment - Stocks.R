@@ -19,7 +19,6 @@ newdf <- merge(last_day,first_day, by = "symbol")
 newdf$growth <- newdf$close.x - newdf$close.y
 
 #ranking stocks from highest difference to lowest
-newdf$growth <- sort(newdf$growth, decreasing = TRUE)
 newdf <- newdf[order(newdf$growth),]
 newdf2 <- newdf[order(nrow(newdf):1),]
 #deleting columns not needed for leaderboard 
